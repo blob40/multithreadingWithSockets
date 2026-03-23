@@ -2,6 +2,7 @@ package com.example;
 
 import java.net.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -30,6 +31,9 @@ public class ChatServerWithThreads {
             listener = new ServerSocket(LISTENING_PORT);
             System.out.println("Listening on port " + LISTENING_PORT);
             while (true) {
+                connection = listener.accept();
+            ConnectionHandler h = new ConnectionHandler(connection);
+            h.start();
                   // Accept next connection request and handle it.
             }
         }
@@ -47,16 +51,50 @@ public class ChatServerWithThreads {
      *  client.
      */
     private static class ConnectionHandler extends Thread {
+        private static ArrayList handlers;
         Socket client;
+          ObjectInputStream ois = null;
+        ObjectOutputStream oos = null;
+      
+
+
         ConnectionHandler(Socket socket) {
             client = socket;
+            if (handlers == null){
+                handlers = new ArrayList();
+            }  
+            handlers.add(this);
         }
+
         public void run() {
+            
+            try {
+                ois = new ObjectInputStream(client.getInputStream());
+                oos = new ObjectOutputStream(client.getOutputStream());
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+
             String clientAddress = client.getInetAddress().toString();
+            
             while(true) {
 	            try {
+                      String message = (String) ois.readObject();
+                      if (message.equals("disconnect")){
+                        System.out.println(message + " Closing Connection");
+                        break;
+                      } else {
+                        System.out.println(message);
+                      }
 	            	//your code to send messages goes here.
 	            }
+                 catch(EOFException e){
+                    System.out.println("the client disconnected, bye!!!");
+                    handlers.remove(this);
+                    break;
+                }
 	            catch (Exception e){
 	                System.out.println("Error on connection with: " 
 	                        + clientAddress + ": " + e);
