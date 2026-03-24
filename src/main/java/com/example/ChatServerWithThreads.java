@@ -86,6 +86,10 @@ public class ChatServerWithThreads {
                         System.out.println(message + " Closing Connection");
                         break;
                       } else {
+                        //loop through all the handlers and tell their output streams the message
+                        for (int i = 0; i < handlers.size(); i++){
+                            
+                        }
                         System.out.println(message);
                       }
 	            	//your code to send messages goes here.

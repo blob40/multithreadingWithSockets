@@ -12,6 +12,8 @@ import javax.swing.*;
 import javax.swing.border.Border;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class SocketClientExample {
 
@@ -34,11 +36,12 @@ public class SocketClientExample {
             throws UnknownHostException, IOException, ClassNotFoundException, InterruptedException {
 
         JFrame f = new JFrame("Sockets");
-        JLabel clientL = new JLabel("Client Input");
-        JTextField clientText = new JTextField();
+        JLabel clientL = new JLabel("Client Input Here:");
+        JTextField clientText = new JTextField("Input will go here");
+        clientText.setBorder(BorderFactory.createLineBorder(Color.BLUE));
         JLabel serverL = new JLabel("Server Output");
         JLabel serverText = new JLabel("Output will go here");
-        serverText.setBorder(BorderFactory.createLineBorder(Color.black));
+        serverText.setBorder(BorderFactory.createLineBorder(Color.BLUE));
        
         f.setSize(300, 300);
         f.setLayout(new GridLayout(4, 1));
@@ -51,39 +54,36 @@ public class SocketClientExample {
         // get the localhost IP address, if server is running on some other IP, you need
         // to use that
         InetAddress host = InetAddress.getLocalHost();
-        Socket socket = null;
-        ObjectOutputStream oos = null;
-        ObjectInputStream ois = null;
-        for (int i = 0; i < 5; i++) {
-            // establish socket connection to server
-            socket = new Socket(host.getHostName(), 9876);
+           Socket socket = new Socket(host.getHostName(), 9876);
             // write to socket using ObjectOutputStream
-            oos = new ObjectOutputStream(socket.getOutputStream());
-            Scanner input = new Scanner(System.in);
-            String line = "";
-            while (!(line = input.nextLine()).equals("disconnect")) {
-                oos.writeObject(line);
-                oos.flush();
+            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+           clientText.addActionListener(new ActionListener() {
 
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO Auto-generated method stub
+                try {
+                    oos.writeObject(clientText.getText());
+                    oos.flush();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+                
             }
-            System.out.println("Sending request to Socket Server");
-            if (i == 4)
-                oos.writeObject("exit");
-            else
-                oos.writeObject("" + i);
+            
+           });
 
-            // read the server response message
-            ois = new ObjectInputStream(socket.getInputStream());
-            String message = (String) ois.readObject();
-            System.out.println("Message: " + message);
-            // close resources
-            ois.close();
-            oos.close();
-            Thread.sleep(100);
+            while(true){
 
-            socket.shutdownOutput();
-            System.out.println("connection closed!");
+                //recieve info and write to screen.
+            }
+            
+            
         }
+        //socket.shutdownOutput();
+         //System.out.println("connection closed!");
         // Any time i write to an output stream you have to do a .flush()
     }
-}
+
