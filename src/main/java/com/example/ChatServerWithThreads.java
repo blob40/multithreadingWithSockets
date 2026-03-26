@@ -52,7 +52,9 @@ public class ChatServerWithThreads {
      */
     private static class ConnectionHandler extends Thread {
         private static ArrayList<ConnectionHandler> handlers;
+        static int num =0;
         Socket client;
+         String clientAddress;
           ObjectInputStream ois = null;
         ObjectOutputStream oos = null;
       
@@ -77,7 +79,8 @@ public class ChatServerWithThreads {
             }
 
 
-            String clientAddress = client.getInetAddress().toString();
+            clientAddress= "user "+num;
+            num++;
             
             while(true) {
 	            try {
@@ -88,7 +91,7 @@ public class ChatServerWithThreads {
                       } else {
                         //loop through all the handlers and tell their output streams the message
                         for (int i = 0; i < handlers.size(); i++){
-                            handlers.get(i).oos.writeObject(message);
+                            handlers.get(i).oos.writeObject(clientAddress + " " + message);
                         }
                         System.out.println(message);
                       }
