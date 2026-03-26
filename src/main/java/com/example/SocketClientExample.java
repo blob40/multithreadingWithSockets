@@ -37,10 +37,10 @@ public class SocketClientExample {
 
         JFrame f = new JFrame("Sockets");
         JLabel clientL = new JLabel("Client Input Here:");
-        JTextField clientText = new JTextField("Input will go here");
+        JTextField clientText = new JTextField();
         clientText.setBorder(BorderFactory.createLineBorder(Color.BLUE));
         JLabel serverL = new JLabel("Server Output");
-        JLabel serverText = new JLabel("Output will go here");
+        JTextArea serverText = new JTextArea();
         serverText.setBorder(BorderFactory.createLineBorder(Color.BLUE));
        
         f.setSize(300, 300);
@@ -64,6 +64,7 @@ public class SocketClientExample {
             public void actionPerformed(ActionEvent e) {
                 // TODO Auto-generated method stub
                 try {
+                    
                     oos.writeObject(clientText.getText());
                     oos.flush();
                 } catch (IOException e1) {
@@ -76,7 +77,8 @@ public class SocketClientExample {
            });
 
             while(true){
-
+                String message = (String) ois.readObject();
+                serverText.setText(serverText.getText()+"\n"+ message);
                 //recieve info and write to screen.
             }
             

@@ -51,7 +51,7 @@ public class ChatServerWithThreads {
      *  client.
      */
     private static class ConnectionHandler extends Thread {
-        private static ArrayList handlers;
+        private static ArrayList<ConnectionHandler> handlers;
         Socket client;
           ObjectInputStream ois = null;
         ObjectOutputStream oos = null;
@@ -88,7 +88,7 @@ public class ChatServerWithThreads {
                       } else {
                         //loop through all the handlers and tell their output streams the message
                         for (int i = 0; i < handlers.size(); i++){
-                            
+                            handlers.get(i).oos.writeObject(message);
                         }
                         System.out.println(message);
                       }
